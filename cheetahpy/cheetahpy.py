@@ -45,7 +45,6 @@ class CheetahPy():
         stream = io.StringIO(csv_text)
         df = pandas.read_csv(stream, sep=sep)
         return df
-
             
     def get_zones(self, athlete, _for='power', sport='Bike'):
         self._validate_athlete(athlete=athlete)
@@ -56,7 +55,7 @@ class CheetahPy():
                   'Sport':sport}
         
         r = self._request(endpoint=endpoint, params=params)
-        df = _csv_text_to_df(r.text)
+        df = self._csv_text_to_df(r.text)
         return df
         
     def get_activities(self
@@ -80,7 +79,7 @@ class CheetahPy():
         
         # Moderate parameters
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = '/' + url_safe_athlete_name
+        endpoint = f'/{url_safe_athlete_name}'
         if type(metrics) == list:
             metrics = ','.join(metrics)
         if type(metadata) == list:
@@ -109,7 +108,7 @@ class CheetahPy():
         # Check for valid athlete
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f"{url_safe_athlete_name}/activity/{activity_filename}"
+        endpoint = f"/{url_safe_athlete_name}/activity/{activity_filename}"
         
         params = {'format':_format}
         
