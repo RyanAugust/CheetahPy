@@ -45,6 +45,30 @@ class CheetahPy():
         stream = io.StringIO(csv_text)
         df = pandas.read_csv(stream, sep=sep)
         return df
+
+    def get_measure_groups(self, athlete):
+        url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
+        endpoint = f"/{url_safe_athlete_name}/measures"
+        
+        r = self._request(endpoint=endpoint)
+        measure_groups = r.text.split('\n')
+        return measure_groups
+    
+    def get_measures(self, athlete, measure_group, start_date, end_date):
+        """
+        measure_group must be valid and can be looked up using `get_measure_groups`
+        start_date=yyyy/mm/dd
+        end_date=yyyy/mm/dd
+        """
+        url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
+        endpoint = f'/{url_safe_athlete_name}/measures/{measure_group}'
+
+        params = {'since':start_date,
+                  'before':end_date}
+        
+        r = self._request(endpoint=endpoint)
+        df = self._csv_text_to_df(r.text)
+        return df
             
     def get_zones(self, athlete, _for='power', sport='Bike'):
         self._validate_athlete(athlete=athlete)
