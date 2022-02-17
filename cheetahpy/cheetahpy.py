@@ -1,7 +1,6 @@
 import requests
 import io
-
-import pandas as pd
+import pandas
 
 class CheetahPy():
     def __init__(self, api_base="http://localhost:12021"):
@@ -44,7 +43,7 @@ class CheetahPy():
     @staticmethod
     def _csv_text_to_df(csv_text, sep=","):
         stream = io.StringIO(csv_text)
-        df = pd.read_csv(stream, sep=sep)
+        df = pandas.read_csv(stream, sep=sep)
         return df
 
             
