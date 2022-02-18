@@ -50,6 +50,15 @@ class CheetahPy():
         df = pandas.read_csv(stream, sep=sep)
         return df
 
+    def get_athlete_details(self, athlete):
+        self._validate_athlete(athlete)
+        url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
+        endpoint = f"/{url_safe_athlete_name}"
+
+        r = self._request(endpoint)
+        df = self._csv_text_to_df(r.text)
+        return df
+
     def get_measure_groups(self, athlete):
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
@@ -176,4 +185,3 @@ class CheetahPy():
             return df
         else:
             return r
-            
