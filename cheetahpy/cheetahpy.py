@@ -18,6 +18,10 @@ class CheetahPy():
             self._get_athletes()
             available_athletes = ', '.join(self.athletes)
         print(available_athletes)
+
+    def _request(self, endpoint, params=None, stream=False):
+        r = requests.get(self.api_base + endpoint, params=params)
+        return r
     
     def _get_athletes(self):
         endpoint = '/'
@@ -47,6 +51,7 @@ class CheetahPy():
         return df
 
     def get_measure_groups(self, athlete):
+        self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         endpoint = f"/{url_safe_athlete_name}/measures"
         
@@ -60,6 +65,7 @@ class CheetahPy():
         start_date=yyyy/mm/dd
         end_date=yyyy/mm/dd
         """
+        self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         endpoint = f'/{url_safe_athlete_name}/measures/{measure_group}'
 
@@ -82,6 +88,34 @@ class CheetahPy():
         df = self._csv_text_to_df(r.text)
         return df
         
+    def get_meanmax(self
+                    ,athlete
+                    ,activity_filename=None
+                    ,start_date=None
+                    ,end_date=None,
+                    ,series):
+        """
+        Retrieves meanmax based on either a single activity OR a daterange
+        Series :: designates the meanmax series that is returned via csv
+        """
+        self._validate_athlete(athlete)
+        url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
+
+        if activity_filename!=None and (start_date==None and end_date==None):
+            endpoint = f'/{url_safe_athlete_name}/meanmax/{activity_filename}'
+            params = {'series':series}
+        elif (start_date!=None and end_date!=None) and activity_filename==None:
+            endpoint = f'/{url_safe_athlete_name}/meanmax/bests'
+            params = {'series':series
+                      ,'since':start_date
+                      ,'before':end_date}
+        else:
+            assert "Must designate either an activity filename OR a start & end date"
+
+        r = self._request(endpoint=endpoint, params=params)
+        df = self._csv_text_to_df(r.text)
+        return df
+
     def get_activities(self
                        ,athlete
                        ,start_date
@@ -142,10 +176,7 @@ class CheetahPy():
             return df
         else:
             return r
-    
-    def _request(self, endpoint, params=None, stream=False):
-        r = requests.get(self.api_base + endpoint, params=params)
-        return r
+
 #     def _build_request(self, endpoint, params=None):
         
 #         return 0
