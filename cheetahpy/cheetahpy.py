@@ -148,7 +148,7 @@ class CheetahPy():
                   'before':end_date,
                   'metrics':metrics,
                   'metadata':metadata,
-#                   'intervals':intervals
+                  'intervals':intervals
                  }
         # Execute
         r = self._request(endpoint=endpoint, params=params)
@@ -176,3 +176,4 @@ class CheetahPy():
             return df
         else:
             return r
+            
