@@ -176,10 +176,3 @@ class CheetahPy():
             return df
         else:
             return r
-
-#     def _build_request(self, endpoint, params=None):
-        
-#         return 0
-#     def _make_request(self, req_string):
-#         r = request.get(req_string)
-#         return r
