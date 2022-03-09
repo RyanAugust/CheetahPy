@@ -99,13 +99,14 @@ class CheetahPy():
         
     def get_meanmax(self
                     ,athlete
+                    ,series
                     ,activity_filename=None
                     ,start_date=None
-                    ,end_date=None,
-                    ,series):
+                    ,end_date=None):
         """
         Retrieves meanmax based on either a single activity OR a daterange
         Series :: designates the meanmax series that is returned via csv
+            options: []
         """
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
@@ -161,7 +162,7 @@ class CheetahPy():
                  }
         # Execute
         r = self._request(endpoint=endpoint, params=params)
-        df = _csv_text_to_df(r.text)
+        df = self._csv_text_to_df(r.text)
         return df
     
     def get_activity(self, athlete, activity_filename, _format='csv'):
@@ -181,7 +182,7 @@ class CheetahPy():
         
         r = self._request(endpoint=endpoint, params=params)
         if _format == 'csv':
-            df = _csv_text_to_df(r.text)
+            df = self._csv_text_to_df(r.text)
             return df
         else:
             return r

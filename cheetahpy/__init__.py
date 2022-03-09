@@ -10,11 +10,12 @@ import requests
 import pandas
 
 
-try:
-    from .cheetahpy import CheetahPy
-except:
-    pass
-
+#try:
+#    from .cheetahpy import CheetahPy
+#except:
+#    pass
+#import CheetahPy
+from .cheetahpy import CheetahPy
 
 __all__ = [
     'CheetahPy',
