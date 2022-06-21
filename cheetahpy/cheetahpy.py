@@ -4,8 +4,6 @@ import pandas
 
 class URLs(object):
     def __init__(self):
-        self.format = response_format
-
         self.base_url = "http://localhost:12021"
 
         # athletes

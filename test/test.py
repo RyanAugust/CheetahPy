@@ -1,3 +1,4 @@
+import cheetahpy
 gc = CheetahPy()
 
 r = gc.get_activities(athlete='Ryan Duecker'
