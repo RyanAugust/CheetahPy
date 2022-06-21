@@ -2,12 +2,63 @@ import requests
 import io
 import pandas
 
-class CheetahPy():
-    def __init__(self, api_base="http://localhost:12021"):
-        self.api_base = api_base
+class URLs(object):
+    def __init__(self):
+        self.format = response_format
+
+        self.base_url = "http://localhost:12021"
+
+        # athletes
+        self.athletes = "/"
+        self.athlete = "/{athlete_name}"
+
+        # measures
+        self.measures_groups = "/{athlete_name}/measures"
+        self.measures = "/{athlete_name}/measures/{measure_group}"
+
+        # zones
+        self.zones = "/{athlete_name}/zones"
+
+        # seasons
+        self.season_meanmax = "/{athlete_name}/meanmax/bests"
+
+        # activities
+        self.activity = "/{athlete_name}/activity/{activity_filename}"
+        self.activity_meanmax = "/{athlete_name}/meanmax/{activity_filename}"
+
+    def base_url(self):
+        return self.base_url
+
+    def athletes_url(self):
+        return self.base_url + self.athletes
+
+    def athlete_url(self):
+        return self.base_url + self.athlete
+
+    def measure_groups_url(self):
+        return self.base_url + self.measures_groups
+
+    def measures_url(self):
+        return self.base_url + self.measures
+
+    def zones_url(self):
+        return self.base_url + self.zones
+
+    def season_meanmax_url(self):
+        return self.base_url + self.season_meanmax
+
+    def activity_meanmax_url(self):
+        return self.base_url + self.activity_meanmax
+
+    def activity_url(self):
+        return self.base_url + self.activity
+
+class CheetahPy(object):
+    def __init__(self):
+        self.url = URLs()
         
     def _test_server(self):
-        r = requests.get(self.api_base)
+        r = requests.get(self.url.base_url)
         assert r.status_code == 200, "GC server unavailable"
         return "Server available"
     
@@ -19,13 +70,14 @@ class CheetahPy():
             available_athletes = ', '.join(self.athletes)
         print(available_athletes)
 
-    def _request(self, endpoint, params=None, stream=False):
-        r = requests.get(self.api_base + endpoint, params=params)
+    def _get_data(self, url, params=None):
+        r = requests.get(url, params=params)
         return r
     
     def _get_athletes(self):
-        endpoint = '/'
-        r = self._request(endpoint=endpoint)
+        url = self.url.athletes_url()
+        r = self._get_data(url)
+
         self.athletes = []
         for athlete in r.text.split('\n')[1:-1]:
             athlete_name = athlete.split(',')[0]
@@ -53,18 +105,18 @@ class CheetahPy():
     def get_athlete_details(self, athlete):
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f"/{url_safe_athlete_name}"
-
-        r = self._request(endpoint)
+        
+        url = self.url.athlete_url()
+        r = self._get_data(url.format(athlete_name=url_safe_athlete_name))
         df = self._csv_text_to_df(r.text)
         return df
 
     def get_measure_groups(self, athlete):
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f"/{url_safe_athlete_name}/measures"
         
-        r = self._request(endpoint=endpoint)
+        url = self.url.measure_groups_url()
+        r = self._get_data(url.format(athlete_name=url_safe_athlete_name))
         measure_groups = r.text.split('\n')
         return measure_groups
     
@@ -76,24 +128,26 @@ class CheetahPy():
         """
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f'/{url_safe_athlete_name}/measures/{measure_group}'
-
         params = {'since':start_date,
                   'before':end_date}
-        
-        r = self._request(endpoint=endpoint)
+
+        url = self.url.measures_url()
+        r = self._get_data(url.format(athlete_name=url_safe_athlete_name
+                                     ,measure_group=measure_group)
+                           ,params)
         df = self._csv_text_to_df(r.text)
         return df
             
     def get_zones(self, athlete, _for='power', sport='Bike'):
         self._validate_athlete(athlete=athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f'/{url_safe_athlete_name}/zones'
+        url = url.zones_url()
         
         params = {'for':_for,
                   'Sport':sport}
         
-        r = self._request(endpoint=endpoint, params=params)
+        r = self._get_data(url.format(athlete_name=url_safe_athlete_name)
+                          , params=params)
         df = self._csv_text_to_df(r.text)
         return df
         
@@ -112,17 +166,22 @@ class CheetahPy():
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
 
         if activity_filename!=None and (start_date==None and end_date==None):
-            endpoint = f'/{url_safe_athlete_name}/meanmax/{activity_filename}'
+            url = self.url.activity_meanmax_url()
             params = {'series':series}
+            r = self._get_data(url.format(athlete_name=url_safe_athlete_name
+                                         ,activity_filename=activity_filename)
+                              , params=params)
+
         elif (start_date!=None and end_date!=None) and activity_filename==None:
-            endpoint = f'/{url_safe_athlete_name}/meanmax/bests'
+            url = self.url.season_meanmax_url()
             params = {'series':series
                       ,'since':start_date
                       ,'before':end_date}
+            r = self._get_data(url.format(athlete_name=url_safe_athlete_name), params=params)
+
         else:
             assert "Must designate either an activity filename OR a start & end date"
 
-        r = self._request(endpoint=endpoint, params=params)
         df = self._csv_text_to_df(r.text)
         return df
 
@@ -147,7 +206,8 @@ class CheetahPy():
         
         # Moderate parameters
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f'/{url_safe_athlete_name}'
+        url = self.url.athlete_url()
+
         if type(metrics) == list:
             metrics = ','.join(metrics)
         if type(metadata) == list:
@@ -161,7 +221,8 @@ class CheetahPy():
                   'intervals':intervals
                  }
         # Execute
-        r = self._request(endpoint=endpoint, params=params)
+        r = self._get_data(url.format(athlete_name=url_safe_athlete_name)
+                                     , params=params)
         df = self._csv_text_to_df(r.text)
         return df
     
@@ -176,13 +237,16 @@ class CheetahPy():
         # Check for valid athlete
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        endpoint = f"/{url_safe_athlete_name}/activity/{activity_filename}"
+        url = self.url.activity_url()
         
         params = {'format':_format}
         
-        r = self._request(endpoint=endpoint, params=params)
+        r = self._get_data(self.url.format(athlete_name=url_safe_athlete_name
+                                          ,activity_filename=activity_filename)
+                          , params=params)
         if _format == 'csv':
             df = self._csv_text_to_df(r.text)
             return df
         else:
             return r
+
