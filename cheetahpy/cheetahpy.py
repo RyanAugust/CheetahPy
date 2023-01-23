@@ -3,9 +3,7 @@ import io
 import pandas
 
 class URLs(object):
-    def __init__(self, response_format='csv'):
-        self.response_format = response_format
-
+    def __init__(self):
         self.base_url = "http://localhost:12021"
 
         # athletes
