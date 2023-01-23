@@ -3,8 +3,8 @@ import io
 import pandas
 
 class URLs(object):
-    def __init__(self):
-        self.format = response_format
+    def __init__(self, response_format='csv'):
+        self.response_format = response_format
 
         self.base_url = "http://localhost:12021"
 
@@ -100,6 +100,7 @@ class CheetahPy(object):
     def _csv_text_to_df(csv_text, sep=","):
         stream = io.StringIO(csv_text)
         df = pandas.read_csv(stream, sep=sep)
+        df.columns = [col.strip(' ') for col in df.columns.tolist()]
         return df
 
     def get_athlete_details(self, athlete):
@@ -200,10 +201,14 @@ class CheetahPy(object):
         metadata=none or all or list (Sport,Workout Code)
         intervals=true
         """
-
         # Check for valid athlete
         self._validate_athlete(athlete)
         
+        # Ensure minimum return for filenames only
+        if activity_filenames_only:
+            metadata = None
+            metrics  = None
+
         # Moderate parameters
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         url = self.url.athlete_url()
@@ -224,7 +229,12 @@ class CheetahPy(object):
         r = self._get_data(url.format(athlete_name=url_safe_athlete_name)
                                      , params=params)
         df = self._csv_text_to_df(r.text)
-        return df
+
+        if activity_filenames_only:
+            filenames = df['filename'].tolist()
+            return filenames
+        else:
+            return df
     
     def get_activity(self, athlete, activity_filename, _format='csv'):
         """
