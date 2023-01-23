@@ -249,9 +249,9 @@ class CheetahPy(object):
         
         params = {'format':_format}
         
-        r = self._get_data(self.url.format(athlete_name=url_safe_athlete_name
-                                          ,activity_filename=activity_filename)
-                          , params=params)
+        r = self._get_data(url.format(athlete_name=url_safe_athlete_name
+                                     ,activity_filename=activity_filename)
+                                     , params=params)
         if _format == 'csv':
             df = self._csv_text_to_df(r.text)
             return df
