@@ -98,7 +98,7 @@ class CheetahPy(object):
     def _csv_text_to_df(csv_text, sep=","):
         stream = io.StringIO(csv_text)
         df = pandas.read_csv(stream, sep=sep)
-        df.columns = [col.strip(' ') for col in df.columns.tolist()]
+        df.columns = [col.strip(' "') for col in df.columns.tolist()]
         return df
 
     def get_athlete_details(self, athlete):
