@@ -9,12 +9,6 @@ import io
 import requests
 import pandas
 
-
-#try:
-#    from .cheetahpy import CheetahPy
-#except:
-#    pass
-#import CheetahPy
 from .cheetahpy import CheetahPy
 
 __all__ = [
