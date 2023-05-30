@@ -13,8 +13,7 @@ from cheetahpy import CheetahPy
 # print('successfully retrieved athlete hr zones for running')
 
 def test_base_url():
-    cp = CheetahPy()
-    result = cp.urls.base_url
+    result = CheetahPy.urls.base_url
     assert result == "http://localhost:12021"
 
 if __name__ == '__main__':
