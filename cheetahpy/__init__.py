@@ -1,8 +1,8 @@
 __title__ = 'CheetahPy'
-__version__ = '1.0.0'
+__version__ = '0.3.0'
 __author__ = 'RyanAugust'
 __license__ = 'MIT'
-__copyright__ = 'Copyright 2022'
+__copyright__ = 'Copyright 2023'
 
 
 import io

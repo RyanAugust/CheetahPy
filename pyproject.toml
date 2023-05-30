@@ -1,6 +1,6 @@
 [project]
 name = "CheetahPy"
-version = "0.2.1"
+version = "0.3.0"
 description = "Python API for accessing Golden Cheetah"
 readme = "README.md"
 authors = [
