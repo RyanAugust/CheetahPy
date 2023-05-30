@@ -1,3 +1,5 @@
+import pytest
+
 from cheetahpy import CheetahPy
 
 # r = CheetahPy.get_activities(athlete='Ryan Duecker'
