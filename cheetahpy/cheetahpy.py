@@ -6,7 +6,7 @@ class URLs(object):
     def __init__(self):
         self.base_url = "http://localhost:12021"
 
-        # athletes
+        # athletesurls
         self.athletes = "/"
         self.athlete = "/{athlete_name}"
 
@@ -53,10 +53,10 @@ class URLs(object):
 
 class CheetahPy(object):
     def __init__(self):
-        self.url = URLs()
+        self.urls = URLs()
         
     def _test_server(self):
-        r = requests.get(self.url.base_url)
+        r = requests.get(self.urls.base_url)
         assert r.status_code == 200, "GC server unavailable"
         return "Server available"
     
@@ -73,7 +73,7 @@ class CheetahPy(object):
         return r
     
     def _get_athletes(self):
-        url = self.url.athletes_url()
+        url = self.urls.athletes_url()
         r = self._get_data(url)
 
         self.athletes = []
@@ -105,7 +105,7 @@ class CheetahPy(object):
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         
-        url = self.url.athlete_url()
+        url = self.urls.athlete_url()
         r = self._get_data(url.format(athlete_name=url_safe_athlete_name))
         df = self._csv_text_to_df(r.text)
         return df
@@ -114,7 +114,7 @@ class CheetahPy(object):
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         
-        url = self.url.measure_groups_url()
+        url = self.urls.measure_groups_url()
         r = self._get_data(url.format(athlete_name=url_safe_athlete_name))
         measure_groups = r.text.split('\n')
         return measure_groups
@@ -130,7 +130,7 @@ class CheetahPy(object):
         params = {'since':start_date,
                   'before':end_date}
 
-        url = self.url.measures_url()
+        url = self.urls.measures_url()
         r = self._get_data(url.format(athlete_name=url_safe_athlete_name
                                      ,measure_group=measure_group)
                            ,params)
@@ -140,7 +140,7 @@ class CheetahPy(object):
     def get_zones(self, athlete, _for='power', sport='Bike'):
         self._validate_athlete(athlete=athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        url = url.zones_url()
+        url = self.urls.zones_url()
         
         params = {'for':_for,
                   'Sport':sport}
@@ -165,14 +165,14 @@ class CheetahPy(object):
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
 
         if activity_filename!=None and (start_date==None and end_date==None):
-            url = self.url.activity_meanmax_url()
+            url = self.urls.activity_meanmax_url()
             params = {'series':series}
             r = self._get_data(url.format(athlete_name=url_safe_athlete_name
                                          ,activity_filename=activity_filename)
                               , params=params)
 
         elif (start_date!=None and end_date!=None) and activity_filename==None:
-            url = self.url.season_meanmax_url()
+            url = self.urls.season_meanmax_url()
             params = {'series':series
                       ,'since':start_date
                       ,'before':end_date}
@@ -209,7 +209,7 @@ class CheetahPy(object):
 
         # Moderate parameters
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        url = self.url.athlete_url()
+        url = self.urls.athlete_url()
 
         if type(metrics) == list:
             metrics = ','.join(metrics)
@@ -245,7 +245,7 @@ class CheetahPy(object):
         # Check for valid athlete
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
-        url = self.url.activity_url()
+        url = self.urls.activity_url()
         
         params = {'format':_format}
         
