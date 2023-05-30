@@ -9,7 +9,9 @@ import io
 import requests
 import pandas
 
-from .cheetahpy import CheetahPy
+from .cheetahpy import CheetahPy_API
+
+CheetahPy = CheetahPy_API()
 
 __all__ = [
     'CheetahPy',

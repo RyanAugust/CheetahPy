@@ -51,7 +51,7 @@ class URLs(object):
     def activity_url(self):
         return self.base_url + self.activity
 
-class CheetahPy(object):
+class CheetahPy_API(object):
     def __init__(self):
         self.urls = URLs()
         
