@@ -1,5 +1,5 @@
 __title__ = 'CheetahPy'
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __author__ = 'RyanAugust'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2023'
@@ -16,4 +16,5 @@ CheetahPy = CheetahPy_API()
 
 __all__ = [
     'CheetahPy',
+    'opendata_dataset'
 ]

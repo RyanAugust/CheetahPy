@@ -6,10 +6,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cheetahpy",
-    version="0.3.0",
+    version="0.4.0",
     author="Ryan Duecker",
     author_email='ryan.duecker@yahoo.com',
-    description="Python wrapper for working with the Golden Cheetah API",
+    description="Python wrapper for working with the Golden Cheetah API & opendata",
     extras_require={
         "test": [
             "pytest"]
