@@ -57,8 +57,11 @@ class CheetahPy_API(object):
         print(self._test_server())
         
     def _test_server(self):
-        r = requests.get(self.urls.base_url)
-        status_ = "API unavailable. Start GC and ensure API is enabled" if r.status_code != 200 else "API available"
+        try:
+            r = requests.get(self.urls.base_url)
+            status_ = "API unavailable. Start GC and ensure API is enabled" if r.status_code != 200 else "API available"
+        except:
+            status_ = "API unavailable. Start GC and ensure API is enabled"
         return status_
     
     def show_athletes(self):
