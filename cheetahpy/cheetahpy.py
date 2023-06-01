@@ -54,11 +54,12 @@ class URLs(object):
 class CheetahPy_API(object):
     def __init__(self):
         self.urls = URLs()
+        print(self._test_server())
         
     def _test_server(self):
         r = requests.get(self.urls.base_url)
-        assert r.status_code == 200, "GC server unavailable"
-        return "Server available"
+        status_ = "API unavailable. Start GC and ensure API is enabled" if r.status_code != 200 else "API available"
+        return status_
     
     def show_athletes(self):
         try:
@@ -101,7 +102,7 @@ class CheetahPy_API(object):
         df.columns = [col.strip(' "') for col in df.columns.tolist()]
         return df
 
-    def get_athlete_details(self, athlete):
+    def get_athlete_summary(self, athlete):
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         

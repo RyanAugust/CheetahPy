@@ -10,6 +10,7 @@ import requests
 import pandas
 
 from .cheetahpy import CheetahPy_API
+from .local_opendata import opendata_dataset
 
 CheetahPy = CheetahPy_API()
 
