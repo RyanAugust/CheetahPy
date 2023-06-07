@@ -4,7 +4,7 @@ import numpy as np
 import json
 
 class opendata_dataset(object):
-    def __init__(self, root_dir):
+    def __init__(self, root_dir:str):
         self.root_dir = root_dir
         self.athlete_ids = self.get_athlete_ids()
 
@@ -21,7 +21,7 @@ class opendata_dataset(object):
         ath_id_str = f"AVAILABLE ATHLETE IDS ({athlete_id_count}): \n {athlete_ids_joined}"
         print(ath_id_str)
 
-    def get_athlete_summary(self, athlete_id, make_float = True):
+    def get_athlete_summary(self, athlete_id:str, make_float:bool = True):
         ath_summary_path = self._athlete_summary_path(athlete_id=athlete_id)
         with open(ath_summary_path, 'r') as f:
             summary_json = f.read()
@@ -44,7 +44,7 @@ class opendata_dataset(object):
                         None
         return df
     
-    def get_athlete_activity_files(self, athlete_id: str) -> list:
+    def get_athlete_activity_files(self, athlete_id:str) -> list:
         athlete_dir = self._athlete_dir(athlete_id=athlete_id)
         for a, b, c in os.walk(athlete_dir):
             raw_files = c
@@ -62,14 +62,14 @@ class opendata_dataset(object):
         return ath_summary_path
     
     @staticmethod
-    def _safe_convert(original_series: pd.Series, type_convert: type) -> pd.Series:
+    def _safe_convert(original_series:pd.Series, type_convert:type) -> pd.Series:
         try:
             new_series = original_series.astype(type_convert)
             return new_series
         except:
             return original_series
     @staticmethod
-    def _safe_list_decompression(original_series: pd.Series,  type_convert: type) -> pd.DataFrame:
+    def _safe_list_decompression(original_series:pd.Series,  type_convert:type) -> pd.DataFrame:
         metric_base_name = original_series.name
         def safe_split(val):
             if type(val) == list:
