@@ -29,7 +29,10 @@ jobs:
       # - name: Lint with pylint
       #   run: pylint cheetahpy/
       - name: Run mypy
-        run: mypy cheetahpy/
+        run: |
+          python3 -m pip install pandas-stubs
+          mypy --install-types
+          mypy cheetahpy/
 
 
   build:
