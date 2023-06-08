@@ -26,12 +26,10 @@ jobs:
         run: |
           # stop the build if there are Python syntax errors or undefined names
           flake8 cheetahpy/ --indent-size=4 --select=F,E112,E113,E203,E304,E502,E702,E703,E71,E72,E731,W191,W6 --statistics -j4
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       # - name: Lint with pylint
       #   run: pylint cheetahpy/
       - name: Run mypy
-        run: mypy cheetahpy/ --ignore-missing-imports --check-untyped-defs --explicit-package-bases --warn-unreachable
+        run: mypy cheetahpy/
 
 
   build:
