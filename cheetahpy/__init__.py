@@ -5,9 +5,8 @@ __license__ = 'MIT'
 __copyright__ = 'Copyright 2023'
 
 
-import io
-import requests
-import pandas
+# import requests
+# import pandas
 
 from .cheetahpy import CheetahPy_API
 from .local_opendata import opendata_dataset

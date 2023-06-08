@@ -1,6 +1,6 @@
 import requests
-import io
 import pandas
+import io
 
 class URLs(object):
     def __init__(self):

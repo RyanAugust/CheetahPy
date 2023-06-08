@@ -48,8 +48,7 @@ class opendata_dataset(object):
         athlete_dir = self._athlete_dir(athlete_id=athlete_id)
         for a, b, c in os.walk(athlete_dir):
             raw_files = c
-        activity_files = []
-        [activity_files.append(file) if '.csv' in file else 0  for file in raw_files]
+        activity_files = [file for file in raw_files if '.csv' in file]
         return activity_files
     
     def _athlete_dir(self, athlete_id: str) -> str:
@@ -81,8 +80,8 @@ class opendata_dataset(object):
         slim_original_series = original_series.dropna()
         decompressed_df = pd.DataFrame(original_series.dropna().tolist(), index=slim_original_series.index)
         if decompressed_df.shape[1] == 2:
-            decompressed_df.columns = [f'{metric_base_name}_value',f'{metric_base_name}_duration']
+            decompressed_df.set_axis([f'{metric_base_name}_value',f'{metric_base_name}_duration'], axis=1)
         else:
-            decompressed_df.columns = [f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])]
+            decompressed_df.set_axis([f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])], axis=1)
         return decompressed_df
 
