@@ -31,7 +31,7 @@ jobs:
       - name: Run mypy
         run: |
           python3 -m pip install pandas-stubs
-          mypy --install-types pandas-stubs
+          mypy --install-types
           mypy cheetahpy/
 
 
