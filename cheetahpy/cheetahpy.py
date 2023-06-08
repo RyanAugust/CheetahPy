@@ -1,6 +1,6 @@
 """Module providing python wrapper to the Golden Cheetah API"""
 import requests
-import pandas
+import pandas as pd
 import io
 
 
@@ -29,28 +29,28 @@ class URLs(object):
     def base_url(self):
         return self.base_url
 
-    def athletes_url(self):
+    def athletes_url(self) -> str:
         return self.base_url + self.athletes
 
-    def athlete_url(self):
+    def athlete_url(self) -> str:
         return self.base_url + self.athlete
 
-    def measure_groups_url(self):
+    def measure_groups_url(self) -> str:
         return self.base_url + self.measures_groups
 
-    def measures_url(self):
+    def measures_url(self) -> str:
         return self.base_url + self.measures
 
-    def zones_url(self):
+    def zones_url(self) -> str:
         return self.base_url + self.zones
 
-    def season_meanmax_url(self):
+    def season_meanmax_url(self) -> str:
         return self.base_url + self.season_meanmax
 
-    def activity_meanmax_url(self):
+    def activity_meanmax_url(self) -> str:
         return self.base_url + self.activity_meanmax
 
-    def activity_url(self):
+    def activity_url(self) -> str:
         return self.base_url + self.activity
 
 
@@ -76,7 +76,7 @@ class CheetahPy_API(object):
             available_athletes = ', '.join(self.athletes)
         print(available_athletes)
 
-    def _get_data(self, url, params=None):
+    def _get_data(self, url:str, params=None):
         r = requests.get(url, params=params)
         return r
 
@@ -89,7 +89,7 @@ class CheetahPy_API(object):
             athlete_name = athlete.split(',')[0]
             self.athletes.append(athlete_name)
 
-    def _validate_athlete(self, athlete):
+    def _validate_athlete(self, athlete:str) -> bool:
         try:
             available_athletes = ', '.join(self.athletes)
         except Exception as err:
@@ -99,18 +99,19 @@ class CheetahPy_API(object):
         assert athlete in self.athletes, f"Invalid athlete. Choose from:\n {available_athletes}"
         return True
 
-    def _url_safe_athlete_name(self, athlete_name):
+    def _url_safe_athlete_name(self, athlete_name:str) -> str:
         url_safe_athlete_name = athlete_name.replace(' ','%20')
         return url_safe_athlete_name
 
     @staticmethod
-    def _csv_text_to_df(csv_text, sep=","):
+    def _csv_text_to_df(csv_text:str, sep=",") -> pd.DataFrame:
         stream = io.StringIO(csv_text)
-        df = pandas.read_csv(stream, sep=sep)
-        df.columns = [col.strip(' "') for col in df.columns.tolist()]
+        df = pd.read_csv(stream, sep=sep)
+        df.rename(mapper=lambda col_name: col_name.strip(' "'), axis=1, inplace=True)
+        # df.columns = [{col:col.strip(' "')} for col in df.columns.tolist()]
         return df
 
-    def get_athlete_summary(self, athlete):
+    def get_athlete_summary(self, athlete:str) -> pd.DataFrame:
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
 
@@ -119,7 +120,7 @@ class CheetahPy_API(object):
         df = self._csv_text_to_df(r.text)
         return df
 
-    def get_measure_groups(self, athlete):
+    def get_measure_groups(self, athlete:str) -> list:
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
 
@@ -128,7 +129,7 @@ class CheetahPy_API(object):
         measure_groups = r.text.split('\n')
         return measure_groups
 
-    def get_measures(self, athlete, measure_group, start_date, end_date):
+    def get_measures(self, athlete:str, measure_group:list, start_date:str, end_date:str) -> pd.DataFrame:
         """
         measure_group must be valid and can be looked up using `get_measure_groups`
         start_date=yyyy/mm/dd
@@ -145,7 +146,7 @@ class CheetahPy_API(object):
         df = self._csv_text_to_df(r.text)
         return df
 
-    def get_zones(self, athlete, _for='power', sport='Bike'):
+    def get_zones(self, athlete:str, _for:str='power', sport:str='Bike') -> pd.DataFrame:
         self._validate_athlete(athlete=athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         url = self.urls.zones_url()
@@ -159,11 +160,11 @@ class CheetahPy_API(object):
         return df
 
     def get_meanmax(self,
-                    athlete,
-                    series,
-                    activity_filename=None,
-                    start_date=None,
-                    end_date=None):
+                    athlete:str,
+                    series:str,
+                    activity_filename = None,
+                    start_date = None,
+                    end_date = None) -> pd.DataFrame:
         """
         Retrieves meanmax based on either a single activity OR a daterange
         Series :: designates the meanmax series that is returned via csv
@@ -192,8 +193,8 @@ class CheetahPy_API(object):
         df = self._csv_text_to_df(r.text)
         return df
 
-    def get_activities(self,athlete,start_date,end_date,metrics=None,metadata=None,
-                       intervals=False,activity_filenames_only=False):
+    def get_activities(self, athlete:str, start_date:str, end_date:str,
+                       metrics=None, metadata=None, intervals:bool=False, activity_filenames_only:bool=False):
         """
         since=yyyy/mm/dd
         before=yyyy/mm/dd
@@ -236,7 +237,7 @@ class CheetahPy_API(object):
         else:
             return df
 
-    def get_activity(self, athlete, activity_filename, _format='csv'):
+    def get_activity(self, athlete:str, activity_filename:str, _format:str='csv'):
         """
         Returns the activity data for a given athlete + activity filename.
         You may specify the format to be returned, which can be: csv, tcx, json, pwx
