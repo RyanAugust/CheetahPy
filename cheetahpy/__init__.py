@@ -1,3 +1,4 @@
+"""Module providing python wrapper to Golden Cheetah data"""
 __title__ = 'CheetahPy'
 __version__ = '0.4.0'
 __author__ = 'RyanAugust'
