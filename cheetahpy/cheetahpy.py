@@ -6,7 +6,7 @@ import io
 
 class URLs(object):
     def __init__(self):
-        self.base_url = "http://localhost:12021"
+        self._base_url = "http://localhost:12021"
 
         # athletesurls
         self.athletes = "/"
@@ -27,31 +27,31 @@ class URLs(object):
         self.activity_meanmax = "/{athlete_name}/meanmax/{activity_filename}"
 
     def base_url(self):
-        return self.base_url
+        return self._base_url
 
     def athletes_url(self) -> str:
-        return self.base_url + self.athletes
+        return self._base_url + self.athletes
 
     def athlete_url(self) -> str:
-        return self.base_url + self.athlete
+        return self._base_url + self.athlete
 
     def measure_groups_url(self) -> str:
-        return self.base_url + self.measures_groups
+        return self._base_url + self.measures_groups
 
     def measures_url(self) -> str:
-        return self.base_url + self.measures
+        return self._base_url + self.measures
 
     def zones_url(self) -> str:
-        return self.base_url + self.zones
+        return self._base_url + self.zones
 
     def season_meanmax_url(self) -> str:
-        return self.base_url + self.season_meanmax
+        return self._base_url + self.season_meanmax
 
     def activity_meanmax_url(self) -> str:
-        return self.base_url + self.activity_meanmax
+        return self._base_url + self.activity_meanmax
 
     def activity_url(self) -> str:
-        return self.base_url + self.activity
+        return self._base_url + self.activity
 
 
 class CheetahPy_API(object):

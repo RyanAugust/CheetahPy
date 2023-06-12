@@ -1,8 +1,8 @@
 """Module providing python wrapper to the Golden Cheetah API"""
 
 import os
-import pandas as pd
 import json
+import pandas as pd
 
 class opendata_dataset(object):
     def __init__(self, root_dir:str):
@@ -10,13 +10,15 @@ class opendata_dataset(object):
         self.athlete_ids = self.get_athlete_ids()
 
     def get_athlete_ids(self):
-        for a,b,c in os.walk(self.root_dir):
+        """Preform a walk of the local dir for all available athlete IDs."""
+        for _,b,_ in os.walk(self.root_dir):
             athletes = b
             athletes.remove('INDEX') if 'INDEX' in athletes else 0
             break
         return athletes
 
     def show_athlete_ids(self):
+        """Display IDs of athletes that are available locally"""
         athlete_id_count = len(self.athlete_ids)
         athlete_ids_joined = ",\n".join(self.athlete_ids)
         ath_id_str = f"AVAILABLE ATHLETE IDS ({athlete_id_count}): \n {athlete_ids_joined}"
@@ -26,15 +28,15 @@ class opendata_dataset(object):
         ath_summary_path = self._athlete_summary_path(athlete_id=athlete_id)
         with open(ath_summary_path, 'r') as f:
             summary_json = f.read()
-        f.close()
+            f.close()
         rides = json.loads(summary_json)['RIDES']
         df = pd.json_normalize(rides)
         if make_float:
             for col in df.columns.tolist():
                 if 'METRIC' in col:
-                    if type(df[col].dropna().values[0]) == str:
+                    if isinstance(df[col].dropna().values[0], str):
                         df[col] = self._safe_convert(original_series=df[col], type_convert=float)
-                    elif type(df[col].dropna().values[0]) == list:
+                    elif isinstance(df[col].dropna().values[0], list):
                         try:
                             decompression = self._safe_list_decompression(original_series=df[col], type_convert=float)
                             df = df.join(decompression)
