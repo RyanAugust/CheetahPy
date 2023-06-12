@@ -7,6 +7,13 @@ repos:
         language: system
         always_run: true
         pass_filenames: false
+      - id: pylint
+        name: pylint
+        entry: pylint cheetahpy/ --exit-zero
+        language: system
+        always_run: true
+        pass_filenames: false
+
       # - id: mypy
       #   name: mypy
       #   entry: mypy cheetahpy/ # --check-untyped-defs # --warn-return-any
@@ -16,12 +23,6 @@ repos:
       - id: tests
         name: tests
         entry: env pytest tests
-        language: system
-        always_run: true
-        pass_filenames: false
-      - id: pylint
-        name: pylint
-        entry: pylint cheetahpy/ --exit-zero
         language: system
         always_run: true
         pass_filenames: false
