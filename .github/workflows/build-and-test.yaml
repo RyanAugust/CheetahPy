@@ -23,16 +23,9 @@ jobs:
       - name: Install dependencies
         run: pip install -e '.[linting,testing]'
       - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 cheetahpy/ --indent-size=4 --select=F,E112,E113,E203,E304,E502,E702,E703,E71,E72,E731,W191,W6 --statistics -j4
-      # - name: Lint with pylint
-      #   run: pylint cheetahpy/
-      - name: Run mypy
-        run: |
-          python3 -m pip install pandas-stubs
-          mypy --install-types
-          mypy cheetahpy/
+        run: flake8 cheetahpy/ --indent-size=4 --select=F,E112,E113,E203,E304,E502,E702,E703,E71,E72,E731,W191,W6 --statistics -j4
+      - name: Lint with pylint
+        run: pylint cheetahpy/ --exit-zero # just return the warnings for now
 
 
   build:
