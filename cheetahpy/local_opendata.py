@@ -4,6 +4,7 @@ import os
 import json
 import pandas as pd
 
+
 class opendata_dataset(object):
     def __init__(self, root_dir:str):
         self.root_dir = root_dir
@@ -58,7 +59,7 @@ class opendata_dataset(object):
         athlete_dir = os.path.join(self.root_dir, athlete_id)
         return athlete_dir
 
-    def _athlete_summary_path(self, athlete_id: str)  -> str:
+    def _athlete_summary_path(self, athlete_id: str) -> str:
         summary_filename = "{" + athlete_id + "}.json"
         ath_summary_path = os.path.join(self.root_dir, athlete_id, summary_filename)
         return ath_summary_path
@@ -71,22 +72,24 @@ class opendata_dataset(object):
         except Exception as err:
             print(f'{err}: cannot convert {type(original_series)} to type {type_convert}')
             return original_series
+
     @staticmethod
     def _safe_list_decompression(original_series:pd.Series,  type_convert:type) -> pd.DataFrame:
         metric_base_name = original_series.name
+
         def safe_split(val):
-            if type(val) == list:
+            if isinstance(val, list):
                 return float(val[0]), float(val[1])
-            elif type(val) == str:
+            elif isinstance(val, str):
                 return float(val)
             else:
                 return 0, 0
+
         slim_original_series = original_series.dropna()
         decompressed_df = pd.DataFrame(original_series.dropna().tolist(), index=slim_original_series.index)
-        ## add column names at time of construction? would need to check size of the list in the series
+        # add column names at time of construction? would need to check size of the list in the series
         if decompressed_df.shape[1] == 2:
             decompressed_df.set_axis([f'{metric_base_name}_value',f'{metric_base_name}_duration'], axis=1)
         else:
             decompressed_df.set_axis([f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])], axis=1)
         return decompressed_df
-

@@ -4,7 +4,8 @@ import pandas as pd
 import io
 
 
-class URLs(object):
+class URLs:
+    """Class for retrieving GC AIP URL paths"""
     def __init__(self):
         self._base_url = "http://localhost:12021"
 
@@ -71,16 +72,19 @@ class CheetahPy_API(object):
         try:
             available_athletes = ', '.join(self.athletes)
         except Exception as err:
-            print(f"{err}: Athletes undefinded, referencing API to load athletes") 
+            print(f"{err}: Athletes undefinded, referencing API to load athletes")
             self._get_athletes()
             available_athletes = ', '.join(self.athletes)
         print(available_athletes)
 
     def _get_data(self, url:str, params=None):
+        """Wrapper function for the requests.get function"""
         r = requests.get(url, params=params)
         return r
 
     def _get_athletes(self):
+        """Helper function that returns all available athletes from the connected
+        GC instance"""
         url = self.urls.athletes_url()
         r = self._get_data(url)
 
@@ -90,21 +94,27 @@ class CheetahPy_API(object):
             self.athletes.append(athlete_name)
 
     def _validate_athlete(self, athlete:str) -> bool:
+        """Helper function that ensures that a passed athlete is actually available
+        within the connected GC instance."""
         try:
             available_athletes = ', '.join(self.athletes)
         except Exception as err:
-            print(f"{err}: Athletes undefinded, referencing API to load athletes") 
+            print(f"{err}: Athletes undefinded, referencing API to load athletes")
             self._get_athletes()
             available_athletes = ', '.join(self.athletes)
         assert athlete in self.athletes, f"Invalid athlete. Choose from:\n {available_athletes}"
         return True
 
     def _url_safe_athlete_name(self, athlete_name:str) -> str:
+        """Helper function ensuring that passed athlete name is format safe to
+        be passed to the API"""
         url_safe_athlete_name = athlete_name.replace(' ','%20')
         return url_safe_athlete_name
 
     @staticmethod
     def _csv_text_to_df(csv_text:str, sep=",") -> pd.DataFrame:
+        """Helper function to convert text returned by the AIP in a CSV format
+        into a pandas dataframe object"""
         stream = io.StringIO(csv_text)
         df = pd.read_csv(stream, sep=sep)
         df.rename(mapper=lambda col_name: col_name.strip(' "'), axis=1, inplace=True)
@@ -112,6 +122,8 @@ class CheetahPy_API(object):
         return df
 
     def get_athlete_summary(self, athlete:str) -> pd.DataFrame:
+        """Retrieves activity summary (ie activity grain) metrics and metadata
+        for a given athlete"""
         self._validate_athlete(athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
 
@@ -141,30 +153,35 @@ class CheetahPy_API(object):
                   'before':end_date}
 
         url = self.urls.measures_url()
-        r = self._get_data(url.format(athlete_name=url_safe_athlete_name,
-                                     measure_group=measure_group),params)
+        r = self._get_data(
+            url.format(athlete_name=url_safe_athlete_name,
+                       measure_group=measure_group),
+            params)
         df = self._csv_text_to_df(r.text)
         return df
 
-    def get_zones(self, athlete:str, _for:str='power', sport:str='Bike') -> pd.DataFrame:
+    def get_zones(self, athlete:str, _for:str = 'power', sport:str = 'Bike') -> pd.DataFrame:
+        """Return dataframe with zone specifications for a designated athelte,
+        sport, and type of measurement"""
         self._validate_athlete(athlete=athlete)
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         url = self.urls.zones_url()
 
-        params = {'for':_for,
-                  'Sport':sport}
+        params = {'for': _for,
+                  'Sport': sport}
 
         r = self._get_data(url.format(athlete_name=url_safe_athlete_name),
                            params=params)
         df = self._csv_text_to_df(r.text)
         return df
 
-    def get_meanmax(self,
-                    athlete:str,
-                    series:str,
-                    activity_filename = None,
-                    start_date = None,
-                    end_date = None) -> pd.DataFrame:
+    def get_meanmax(
+        self,
+        athlete:str,
+        series:str,
+        activity_filename = None,
+        start_date = None,
+        end_date = None) -> pd.DataFrame:
         """
         Retrieves meanmax based on either a single activity OR a daterange
         Series :: designates the meanmax series that is returned via csv
@@ -176,15 +193,16 @@ class CheetahPy_API(object):
         if activity_filename is not None and (start_date is None and end_date is None):
             url = self.urls.activity_meanmax_url()
             params = {'series':series}
-            r = self._get_data(url.format(athlete_name=url_safe_athlete_name,
-                                          activity_filename=activity_filename),
-                                params=params)
+            r = self._get_data(
+                url.format(athlete_name=url_safe_athlete_name,
+                    activity_filename=activity_filename),
+                params=params)
 
         elif (start_date is not None and end_date is not None) and activity_filename is None:
             url = self.urls.season_meanmax_url()
-            params = {'series':series,
-                    'since':start_date,
-                    'before':end_date}
+            params = {'series': series,
+                      'since': start_date,
+                      'before': end_date}
             r = self._get_data(url.format(athlete_name=url_safe_athlete_name), params=params)
 
         else:
@@ -193,42 +211,48 @@ class CheetahPy_API(object):
         df = self._csv_text_to_df(r.text)
         return df
 
-    def get_activities(self, athlete:str, start_date:str, end_date:str,
-                       metrics=None, metadata=None, intervals:bool=False, activity_filenames_only:bool=False):
-        """
-        since=yyyy/mm/dd
+    def get_activities(
+            self,
+            athlete:str,
+            start_date:str,
+            end_date:str,
+            metrics = None,
+            metadata = None,
+            intervals:bool = False,
+            activity_filenames_only:bool = False):
+        """since=yyyy/mm/dd
         before=yyyy/mm/dd
         metrics=NP,IF,TSS,AveragePower
         metadata=none or all or list (Sport,Workout Code)
-        intervals=true
-        """
+        intervals=true"""
         # Check for valid athlete
         self._validate_athlete(athlete)
 
         # Ensure minimum return for filenames only
         if activity_filenames_only:
             metadata = None
-            metrics  = None
+            metrics = None
 
         # Moderate parameters
         url_safe_athlete_name = self._url_safe_athlete_name(athlete_name=athlete)
         url = self.urls.athlete_url()
 
-        if type(metrics) == list:
+        if isinstance(metrics, list):
             metrics = ','.join(metrics)
-        if type(metadata) == list:
+        if isinstance(metadata, list):
             metadata = ','.join(metadata)
 
         # Finalize params
-        params = {'since':start_date,
-                  'before':end_date,
-                  'metrics':metrics,
-                  'metadata':metadata,
-                  'intervals':intervals
-                 }
+        params = {'since': start_date,
+                  'before': end_date,
+                  'metrics': metrics,
+                  'metadata': metadata,
+                  'intervals': intervals
+                  }
         # Execute
-        r = self._get_data(url.format(athlete_name=url_safe_athlete_name),
-                           params=params)
+        r = self._get_data(
+            url.format(athlete_name=url_safe_athlete_name),
+            params=params)
         df = self._csv_text_to_df(r.text)
 
         if activity_filenames_only:
@@ -237,7 +261,7 @@ class CheetahPy_API(object):
         else:
             return df
 
-    def get_activity(self, athlete:str, activity_filename:str, _format:str='csv'):
+    def get_activity(self, athlete:str, activity_filename:str, _format:str = 'csv'):
         """
         Returns the activity data for a given athlete + activity filename.
         You may specify the format to be returned, which can be: csv, tcx, json, pwx
@@ -252,12 +276,14 @@ class CheetahPy_API(object):
 
         params = {'format':_format}
 
-        r = self._get_data(url.format(athlete_name=url_safe_athlete_name,
-                                    activity_filename=activity_filename),
-                            params=params)
+        r = self._get_data(
+            url.format(
+                athlete_name=url_safe_athlete_name,
+                activity_filename=activity_filename
+                ),
+            params=params)
         if _format == 'csv':
             df = self._csv_text_to_df(r.text)
             return df
         else:
             return r
-
