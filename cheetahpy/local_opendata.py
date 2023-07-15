@@ -8,7 +8,7 @@ import pandas as pd
 class opendata_dataset(object):
     def __init__(self, root_dir:str):
         self.root_dir = root_dir
-        self.athlete_ids = self.get_athlete_ids()
+        # self.athlete_ids = self.get_athlete_ids()
 
     def get_athlete_ids(self):
         """Preform a walk of the local dir for all available athlete IDs."""
