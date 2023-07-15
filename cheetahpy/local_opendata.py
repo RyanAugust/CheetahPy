@@ -8,7 +8,7 @@ import pandas as pd
 class opendata_dataset(object):
     def __init__(self, root_dir:str):
         self.root_dir = root_dir
-        # self.athlete_ids = self.get_athlete_ids()
+        self.athlete_ids = self.get_athlete_ids()
 
     def get_athlete_ids(self):
         """Preform a walk of the local dir for all available athlete IDs."""
@@ -89,7 +89,11 @@ class opendata_dataset(object):
         decompressed_df = pd.DataFrame(original_series.dropna().tolist(), index=slim_original_series.index)
         # add column names at time of construction? would need to check size of the list in the series
         if decompressed_df.shape[1] == 2:
-            decompressed_df.set_axis([f'{metric_base_name}_value',f'{metric_base_name}_duration'], axis=1)
+            new_cols = [f'{metric_base_name}_value',f'{metric_base_name}_duration']
+            # decompressed_df.set_axis(new_cols, axis='columns') ### bullshit, this doesn't work
+            decompressed_df.columns = new_cols
         else:
-            decompressed_df.set_axis([f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])], axis=1)
+            new_cols = [f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])]
+            # decompressed_df.set_axis(new_cols, axis='columns') ### bullshit, this doesn't work
+            decompressed_df.columns = new_cols
         return decompressed_df
