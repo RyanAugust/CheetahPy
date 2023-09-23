@@ -33,19 +33,20 @@ class opendata_dataset(object):
         rides = json.loads(summary_json)['RIDES']
         df = pd.json_normalize(rides)
         if make_float:
-            for col in df.columns.tolist():
-                if 'METRIC' in col:
-                    if isinstance(df[col].dropna().values[0], str):
-                        df[col] = self._safe_convert(original_series=df[col], type_convert=float)
-                    elif isinstance(df[col].dropna().values[0], list):
-                        try:
-                            decompression = self._safe_list_decompression(original_series=df[col], type_convert=float)
-                            df = df.join(decompression)
-                            del df[col]
-                        except Exception as err:
-                            print(f'{err}: {col}--fail')
-                    else:
-                        None
+            metric_cols = []
+            [metric_cols.append(col) if 'METRIC' in col else None for col in df.columns.tolist()]
+            for col in metric_cols:
+                if isinstance(df[col].dropna().values[0], str):
+                    df[col] = self._safe_convert(original_series=df[col], type_convert=float)
+                elif isinstance(df[col].dropna().values[0], list):
+                    try:
+                        decompression = self._safe_list_decompression(original_series=df[col], type_convert=float)
+                        df = df.join(decompression)
+                        del df[col]
+                    except Exception as err:
+                        print(f'{err}: {col}--fail')
+                else:
+                    None
         return df
 
     def get_athlete_activity_files(self, athlete_id:str) -> list:
