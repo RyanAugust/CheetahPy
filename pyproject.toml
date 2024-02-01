@@ -6,6 +6,10 @@ readme = "README.md"
 authors = [
   { name="Ryan Duecker", email="ryan.duecker@yahoo.com" },
 ]
+dependencies = [
+  "pandas",
+  "requests"
+]
 license = {file = 'LICENSE'}
 requires-python = ">=3.8"
 classifiers = [
