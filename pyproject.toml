@@ -23,7 +23,7 @@ testing = ["pytest"]
 linting = ["flake8", "pylint"]
 
 [tool.setuptools.packages.find]
-where = ["cheetahpy"]
+where = ["src"]
 
 [tool.setuptools.dynamic]
-version = {file = "cheetahpy/VERSION"}
+version = {file = "src/cheetahpy/VERSION"}
