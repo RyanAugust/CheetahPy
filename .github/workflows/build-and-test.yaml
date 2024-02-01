@@ -25,7 +25,7 @@ jobs:
 #      - name: Lint with flake8
 #        run: flake8 cheetahpy/ --indent-size=4 --select=F,E112,E113,E203,E304,E502,E702,E703,E71,E72,E731,W191,W6 --statistics -j4
       - name: Lint with pylint
-        run: pylint cheetahpy/ --exit-zero # just return the warnings for now
+        run: pylint src/ --exit-zero # just return the warnings for now
 
   tester:
     name: tester
