@@ -1,6 +1,0 @@
-name: cheetahpy
-dependencies:
-  - python=3.10
-  - pip
-  - requests
-  - pandas
