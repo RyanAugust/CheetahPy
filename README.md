@@ -1,5 +1,7 @@
 # CheetahPy
 [![CodeFactor](https://www.codefactor.io/repository/github/ryanaugust/cheetahpy/badge)](https://www.codefactor.io/repository/github/ryanaugust/cheetahpy)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/cheetahpy.svg?label=PyPI%20downloads)](
+https://pypi.org/project/cheetahpy/)
 
 This module is used to access [Golden Cheetah](https://github.com/GoldenCheetah/GoldenCheetah) based data.
 **CheetahPy_API** enables pythonic access to the GC API, allowing for programmatic access to GC rendered data.
@@ -10,5 +12,3 @@ Documentation specifically for the API can be found [here](https://github.com/Go
 
 Golden Cheetah has five key object classes: Athletes, Activities, Zones, Measures, and Meanmax.
 Athlete is the node from which all others are referenced.
-
-
