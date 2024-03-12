@@ -33,19 +33,20 @@ class opendata_dataset(object):
         rides = json.loads(summary_json)['RIDES']
         df = pd.json_normalize(rides)
         if make_float:
-            for col in df.columns.tolist():
-                if 'METRIC' in col:
-                    if isinstance(df[col].dropna().values[0], str):
-                        df[col] = self._safe_convert(original_series=df[col], type_convert=float)
-                    elif isinstance(df[col].dropna().values[0], list):
-                        try:
-                            decompression = self._safe_list_decompression(original_series=df[col], type_convert=float)
-                            df = df.join(decompression)
-                            del df[col]
-                        except Exception as err:
-                            print(f'{err}: {col}--fail')
-                    else:
-                        None
+            metric_cols = []
+            [metric_cols.append(col) if 'METRIC' in col else None for col in df.columns.tolist()]
+            for col in metric_cols:
+                if isinstance(df[col].dropna().values[0], str):
+                    df[col] = self._safe_convert(original_series=df[col], type_convert=float)
+                elif isinstance(df[col].dropna().values[0], list):
+                    try:
+                        decompression = self._safe_list_decompression(original_series=df[col], type_convert=float)
+                        df = df.join(decompression)
+                        del df[col]
+                    except Exception as err:
+                        print(f'{err}: {col}--fail')
+                else:
+                    None
         return df
 
     def get_athlete_activity_files(self, athlete_id:str) -> list:
@@ -89,7 +90,11 @@ class opendata_dataset(object):
         decompressed_df = pd.DataFrame(original_series.dropna().tolist(), index=slim_original_series.index)
         # add column names at time of construction? would need to check size of the list in the series
         if decompressed_df.shape[1] == 2:
-            decompressed_df.set_axis([f'{metric_base_name}_value',f'{metric_base_name}_duration'], axis=1)
+            new_cols = [f'{metric_base_name}_value',f'{metric_base_name}_duration']
+            # decompressed_df.set_axis(new_cols, axis='columns') ### bullshit, this doesn't work
+            decompressed_df.columns = new_cols
         else:
-            decompressed_df.set_axis([f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])], axis=1)
+            new_cols = [f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])]
+            # decompressed_df.set_axis(new_cols, axis='columns') ### bullshit, this doesn't work
+            decompressed_df.columns = new_cols
         return decompressed_df

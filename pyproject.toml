@@ -1,10 +1,13 @@
 [project]
 name = "CheetahPy"
-version = "0.3.0"
 description = "Python API for accessing Golden Cheetah"
 readme = "README.md"
 authors = [
   { name="Ryan Duecker", email="ryan.duecker@yahoo.com" },
+]
+dependencies = [
+  "pandas",
+  "requests"
 ]
 license = {file = 'LICENSE'}
 requires-python = ">=3.8"
@@ -13,3 +16,14 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+testing = ["pytest"]
+linting = ["flake8", "pylint"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {file = "src/cheetahpy/VERSION"}
