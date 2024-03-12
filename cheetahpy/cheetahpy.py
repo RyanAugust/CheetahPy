@@ -62,7 +62,7 @@ class CheetahPy_API(object):
 
     def _test_server(self):
         try:
-            r = requests.get(self.urls.base_url)
+            r = requests.get(self.urls.base_url())
             status_ = "API unavailable. Start GC and ensure API is enabled" if r.status_code != 200 else "API available"
         except Exception as err:
             status_ = f"{err}: API unavailable. Start GC and ensure API is enabled"
