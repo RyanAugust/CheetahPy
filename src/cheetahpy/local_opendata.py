@@ -30,6 +30,11 @@ class opendata_dataset(object):
         ath_id_str = f"AVAILABLE ATHLETE IDS ({athlete_id_count}): \n {athlete_ids_joined}"
         print(ath_id_str)
 
+    def get_list_columns(self, dataframe: pd.DataFrame) -> list:
+        list_cols = []
+        [list_cols.append(col) if isinstance(dataframe[col].dropna().values[0], list) else None for col in dataframe.columns.tolist()]
+        return list_cols
+
     def get_athlete_summary(self, athlete_id:str, make_float:bool = True) -> pd.DataFrame:
         """Give the activity summary for a given athelte ID.
 
@@ -50,16 +55,17 @@ class opendata_dataset(object):
             for col in metric_cols:
                 if isinstance(df[col].dropna().values[0], str):
                     df[col] = self._safe_convert(original_series=df[col], type_convert=float)
-                elif isinstance(df[col].dropna().values[0], list):
-                    try:
-                        decompression = self._safe_list_decompression(original_series=df[col], type_convert=float)
-                        df = df.join(decompression)
-                        del df[col]
-                    except Exception as err:
-                        print(f'{err}: {col}--fail')
                 else:
                     None
+
         return df
+
+    def unpack_list_columns(self, dataframe: pd.DataFrame, list_columns: list) -> pd.DataFrame:
+        for list_col in list_columns:
+            decompression = self._safe_list_decompression(original_series=dataframe[list_col])
+            dataframe = dataframe.join(decompression)
+            del dataframe[list_col]
+        return dataframe
 
     def get_athlete_activity_files(self, athlete_id:str) -> list:
         """Returns the discrete files representing individual activities for a given athlete ID. These files are direct children of the athlete's directory.
@@ -93,26 +99,18 @@ class opendata_dataset(object):
             return original_series
 
     @staticmethod
-    def _safe_list_decompression(original_series:pd.Series,  type_convert:type) -> pd.DataFrame:
-        metric_base_name = original_series.name
+    def _safe_list_decompression(original_series: pd.Series) -> pd.DataFrame:
+        """
+        Takes a column of lists (col_name) from a dataframe (df)
 
-        def safe_split(val):
-            if isinstance(val, list):
-                return float(val[0]), float(val[1])
-            elif isinstance(val, str):
-                return float(val)
-            else:
-                return 0, 0
-
-        slim_original_series = original_series.dropna()
-        decompressed_df = pd.DataFrame(original_series.dropna().tolist(), index=slim_original_series.index)
-        # add column names at time of construction? would need to check size of the list in the series
-        if decompressed_df.shape[1] == 2:
-            new_cols = [f'{metric_base_name}_value',f'{metric_base_name}_duration']
-            # decompressed_df.set_axis(new_cols, axis='columns') ### bullshit, this doesn't work
-            decompressed_df.columns = new_cols
-        else:
-            new_cols = [f'{metric_base_name}_value_{x}' for x in range(decompressed_df.shape[1])]
-            # decompressed_df.set_axis(new_cols, axis='columns') ### bullshit, this doesn't work
-            decompressed_df.columns = new_cols
-        return decompressed_df
+        Returns a dataframe with number of columns equal to max list size
+        and each element of the row list in its own column with column names appending a prefix based on list index
+        Args:
+            original_series (pd.Series): pandas series that contains lists of data in it's rows
+        Returns:
+            new_df (pd.DataFrame): dataframe based on the expanded lists of the data contained in original_series.
+        """
+        col_prefix = original_series.name
+        new_df = original_series.apply(pd.Series)
+        new_df = new_df.rename(columns = lambda x : col_prefix + '_' + str(x))
+        return new_df
