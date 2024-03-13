@@ -10,8 +10,13 @@ class opendata_dataset(object):
         self.root_dir = root_dir
         self.athlete_ids = self.get_athlete_ids()
 
-    def get_athlete_ids(self):
-        """Preform a walk of the local dir for all available athlete IDs."""
+    def get_athlete_ids(self) -> list:
+        """Preform a walk of the local dir for all available athlete IDs.
+
+        Args:
+            None
+        Returns:
+            athletes (list): List of athlete IDs, which equate to the directory their data is stored in."""
         for _,b,_ in os.walk(self.root_dir):
             athletes = b
             athletes.remove('INDEX') if 'INDEX' in athletes else 0
@@ -25,7 +30,14 @@ class opendata_dataset(object):
         ath_id_str = f"AVAILABLE ATHLETE IDS ({athlete_id_count}): \n {athlete_ids_joined}"
         print(ath_id_str)
 
-    def get_athlete_summary(self, athlete_id:str, make_float:bool = True):
+    def get_athlete_summary(self, athlete_id:str, make_float:bool = True) -> pd.DataFrame:
+        """Give the activity summary for a given athelte ID.
+
+        Args:
+            athlete_id (str): ID string corresponding to an athlete within the opendata directory
+            make_float (bool): Attempt to convert all of the metric columns to floats and when encountering a nested list, extract the list into columns
+        Returns:
+            df (DataFrame): processed summary dataframe, with rows corresponding to activities"""
         ath_summary_path = self._athlete_summary_path(athlete_id=athlete_id)
         with open(ath_summary_path, 'r') as f:
             summary_json = f.read()
@@ -50,6 +62,12 @@ class opendata_dataset(object):
         return df
 
     def get_athlete_activity_files(self, athlete_id:str) -> list:
+        """Returns the discrete files representing individual activities for a given athlete ID. These files are direct children of the athlete's directory.
+
+        Args:
+            athelte_id (str): ID string corresponding to an athlete within the opendata directory
+        Returns:
+            activity_files (list): list of file names representing activities that are stored within the athlete directory"""
         athlete_dir = self._athlete_dir(athlete_id=athlete_id)
         for a, b, c in os.walk(athlete_dir):
             raw_files = c
