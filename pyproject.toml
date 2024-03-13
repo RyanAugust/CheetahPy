@@ -1,5 +1,5 @@
 [project]
-name = "CheetahPy"
+name = "cheetahpy"
 description = "Python API for accessing Golden Cheetah"
 readme = "README.md"
 authors = [
@@ -21,6 +21,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 testing = ["pytest"]
 linting = ["flake8", "pylint"]
+dev = ["pytest", "flake8", "pylint"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
