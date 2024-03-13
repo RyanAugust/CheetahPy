@@ -11,8 +11,6 @@ with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as version_file:
 from .cheetahpy import CheetahPy_API
 from .local_opendata import opendata_dataset
 
-CheetahPy = CheetahPy_API()
-
 __all__ = [
     'CheetahPy',
     'opendata_dataset'

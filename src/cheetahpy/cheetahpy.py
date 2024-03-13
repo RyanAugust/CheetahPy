@@ -55,10 +55,11 @@ class URLs:
         return self._base_url + self.activity
 
 
-class CheetahPy_API(object):
-    def __init__(self):
+class CheetahPy_API:
+    def __init__(self, test_server: bool = False):
         self.urls = URLs()
-        print(self._test_server())
+        if test_server:
+            print(self._test_server())
 
     def _test_server(self):
         try:

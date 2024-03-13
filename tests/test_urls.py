@@ -1,6 +1,6 @@
 # import pytest
 
-from cheetahpy import CheetahPy
+import cheetahpy
 
 # r = CheetahPy.get_activities(athlete='Ryan Duecker'
 #                       ,start_date="2022/01/20"
@@ -13,7 +13,8 @@ from cheetahpy import CheetahPy
 # print('successfully retrieved athlete hr zones for running')
 
 def test_base_url():
-    result = CheetahPy.urls.base_url()
+    CP_AIP = cheetahpy.CheetahPy_API()
+    result = CP_AIP.urls.base_url()
     assert result == "http://localhost:12021"
 
 if __name__ == '__main__':
