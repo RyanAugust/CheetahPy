@@ -95,7 +95,12 @@ class opendata_dataset(object):
             new_series = original_series.astype(type_convert)
             return new_series
         except Exception as err:
-            print(f'{err}: cannot convert {type(original_series)} to type {type_convert}')
+            a_value = original_series.dropna().tolist()
+            if len(a_value) > 0:
+                a_value_type = type(a_value[0])
+            else:
+                a_value_type = "UNKNOWN"
+            print(f'{err}: cannot convert {original_series.name} (of type: {a_value_type}) to type {type_convert}')
             return original_series
 
     @staticmethod
