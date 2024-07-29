@@ -3,6 +3,9 @@ import requests
 import pandas as pd
 import io
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class URLs:
     """Class for retrieving GC AIP URL paths"""
@@ -73,7 +76,7 @@ class CheetahPy_API:
         try:
             available_athletes = ', '.join(self.athletes)
         except Exception as err:
-            print(f"{err}: Athletes undefinded, referencing API to load athletes")
+            logger.warning(f"{err}: Athletes undefinded, referencing API to load athletes")
             self._get_athletes()
             available_athletes = ', '.join(self.athletes)
         print(available_athletes)
@@ -100,7 +103,7 @@ class CheetahPy_API:
         try:
             available_athletes = ', '.join(self.athletes)
         except Exception as err:
-            print(f"{err}: Athletes undefinded, referencing API to load athletes")
+            logger.warning(f"{err}: Athletes undefinded, referencing API to load athletes")
             self._get_athletes()
             available_athletes = ', '.join(self.athletes)
         assert athlete in self.athletes, f"Invalid athlete. Choose from:\n {available_athletes}"
