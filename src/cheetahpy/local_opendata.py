@@ -92,7 +92,7 @@ class opendata_dataset(object):
         return ath_summary_path
 
     @staticmethod
-    def _safe_convert(original_series:pd.Series, type_convert:type) -> pd.Series:
+    def _safe_convert(original_series:pd.Series, type_convert:type, warn_on_convert:bool=False) -> pd.Series:
         try:
             new_series = original_series.astype(type_convert)
             return new_series
@@ -102,7 +102,8 @@ class opendata_dataset(object):
                 a_value_type = type(a_value[0])
             else:
                 a_value_type = "UNKNOWN"
-            logger.warning(f'[{err}] cannot convert {original_series.name} (of type: {a_value_type}) to type {type_convert}')
+            if warn_on_convert:
+                logger.warning(f'[{err}] cannot convert {original_series.name} (of type: {a_value_type}) to type {type_convert}')
             return original_series
 
     @staticmethod
