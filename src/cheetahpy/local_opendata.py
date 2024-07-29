@@ -3,7 +3,9 @@
 import os
 import json
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
 class opendata_dataset(object):
     def __init__(self, root_dir:str):
@@ -100,7 +102,7 @@ class opendata_dataset(object):
                 a_value_type = type(a_value[0])
             else:
                 a_value_type = "UNKNOWN"
-            print(f'{err}: cannot convert {original_series.name} (of type: {a_value_type}) to type {type_convert}')
+            logger.warning(f'[{err}] cannot convert {original_series.name} (of type: {a_value_type}) to type {type_convert}')
             return original_series
 
     @staticmethod
